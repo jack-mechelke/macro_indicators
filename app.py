@@ -19,6 +19,13 @@ interpretations = interpret_all(data)
 # Display
 st.title("Macro Dashboard")
 
+if st.button("Refresh Data"):
+    st.rerun()
+
+with st.spinner("Loading data..."):
+    data = fetch_all_data()
+    interpretations = interpret_all(data)
+
 def calculate_macro_health(interpretations):
     score = 0
     for interp in interpretations.values():
@@ -76,5 +83,3 @@ with col4:
     st.subheader("Fed Funds Rate (%)")
     fedfunds_series = fetch_historical_series('FEDFUNDS')
     st.line_chart(fedfunds_series)
-
-st.experimental_rerun()
