@@ -3,7 +3,12 @@ import streamlit as st
 from fetch_data import fetch_all_data, fetch_historical_series, fetch_historical_cpi
 from interpret import interpret_all
 
-st.set_page_config(page_title="Macro Dashboard", layout="wide")
+st.set_page_config(
+    page_title="Macro Dashboard",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 # Fetch latest data
 data = fetch_all_data()
@@ -13,6 +18,20 @@ interpretations = interpret_all(data)
 
 # Display
 st.title("Macro Dashboard")
+
+def calculate_macro_health(interpretations):
+    score = 0
+    for interp in interpretations.values():
+        if "✅" in interp:
+            score += 10
+        elif "⚠️" in interp:
+            score += 5
+        else:
+            score += 0
+    return score
+
+macro_health = calculate_macro_health(interpretations)
+st.metric(label="Macro Health Score", value=f"{macro_health} / 100")
 
 cols = st.columns(3)
 
@@ -57,3 +76,5 @@ with col4:
     st.subheader("Fed Funds Rate (%)")
     fedfunds_series = fetch_historical_series('FEDFUNDS')
     st.line_chart(fedfunds_series)
+
+st.experimental_rerun()
